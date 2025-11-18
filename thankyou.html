@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thank You — Yesh Automobiles</title>
+
+  <!-- GTM head -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End GTM head -->
+
+  <style>body{font-family:Arial,Helvetica,sans-serif;max-width:700px;margin:30px auto;padding:20px}</style>
+</head>
+<body>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <header><h1>Thank You!</h1><nav><a href="index.html">Home</a> | <a href="products.html">Products</a></nav></header>
+
+  <main>
+    <p id="thanksMsg">Processing your order...</p>
+  </main>
+
+  <script>
+    // read order data from query params
+    const params = new URLSearchParams(location.search);
+    const order = params.get('order') || 'unknown';
+    const product = params.get('product') || 'unknown';
+    const value = Number(params.get('value') || 0);
+
+    document.getElementById('thanksMsg').textContent = `Thanks for your order ${order}! Product: ${product}. Amount: ₹${value}`;
+
+    // push purchase event to dataLayer for GTM to capture as a final purchase
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'purchase',
+      ecommerce: {
+        transaction_id: order,
+        value: value,
+        currency: 'INR',
+        items: [{item_id: product, price: value}]
+      }
+    });
+  </script>
+</body>
+</html>
