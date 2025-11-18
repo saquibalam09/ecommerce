@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Payment — Yesh Automobiles</title>
+
+  <!-- GTM head -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End GTM head -->
+
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;max-width:700px;margin:30px auto;padding:0 15px;}
+    form{display:flex;flex-direction:column;gap:10px}
+    .btn{padding:10px;background:#1a73e8;color:#fff;border:none;border-radius:6px}
+  </style>
+</head>
+<body>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <header><h1>Payment</h1><nav><a href="index.html">Home</a> | <a href="products.html">Products</a></nav></header>
+
+  <main>
+    <h2>Checkout</h2>
+    <form id="checkoutForm" onsubmit="return handleCheckout(event)">
+      <label>Name <input type="text" id="customerName" required></label>
+      <label>Phone <input type="tel" id="phone" required></label>
+      <p id="productInfo"></p>
+      <button class="btn" type="submit">Pay ₹ <span id="payAmount">0</span></button>
+    </form>
+  </main>
+
+  <script>
+    // read product and price from query string
+    const params = new URLSearchParams(location.search);
+    const product = params.get('product') || 'Unknown';
+    const price = parseInt(params.get('price') || '0', 10);
+    document.getElementById('productInfo').textContent = product + ' — ₹' + price;
+    document.getElementById('payAmount').textContent = price;
+
+    function handleCheckout(e){
+      e.preventDefault();
+      const orderId = 'ORD' + Date.now();
+      const value = price || 0;
+
+      // push purchase event into dataLayer for GTM to pick up
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'purchase_initiated',
+        ecommerce: {
+          transaction_id: orderId,
+          value: value,
+          currency: 'INR',
+          items: [{item_id: product, price: value}]
+        }
+      });
+
+      // simulate successful payment and redirect to thank-you with params
+      // in production you'd do this after confirming payment server-side
+      location.href = `thankyou.html?order=${orderId}&product=${encodeURIComponent(product)}&value=${value}`;
+      return false;
+    }
+  </script>
+</body>
+</html>
